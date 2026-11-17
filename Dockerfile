@@ -1,30 +1,29 @@
-# Seleciona a imagem a ser usada no container (recomendação: Python + Alpine)
-FROM
+# Imagem base: Python 3.12 em Alpine (leve)
+FROM python:3.12-alpine
 
-# Define o ambiente de trabalho dentro do container
+# Diretório de trabalho dentro do container
 WORKDIR /app
 
-# Instalar dependências do sistema operacional (se necessário)
+# Dependências do sistema para compilar pacotes Python
 RUN apk add --no-cache \
     gcc \
     musl-dev \
     python3-dev
 
-# Copiar a lista de dependências Python para o container
-COPY
+# Copia só o requirements antes, para aproveitar o cache de camadas
+COPY requirements.txt .
 
-# Instalar as bibliotecas necessárias para a aplicação Python
-# (presentes no arquivo requirements.txt)
-RUN
+# Instala as bibliotecas Python da aplicação
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar o restante do código-fonte para o container
-COPY
+# Copia o restante do código-fonte
+COPY . .
 
-# Criar o diretório para armazenamento dos logs
-RUN
+# Cria a pasta de logs (o app.py grava em ./logs/app.log)
+RUN mkdir -p /app/logs
 
-# Define a porta utilizada pela aplicação
-EXPOSE
+# Porta usada pela aplicação (definida no app.py)
+EXPOSE 5005
 
-# Iniciar a aplicação
-CMD
+# Inicia a aplicação
+CMD ["python", "app.py"]
